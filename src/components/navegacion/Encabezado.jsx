@@ -149,7 +149,7 @@ return (
         onHide={() => setMostrarMenu(false)}
       >
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Menú Discosa</Offcanvas.Title>
+          <Offcanvas.Title>MENU DE OPCIONES</Offcanvas.Title>
         </Offcanvas.Header>
 
         <Offcanvas.Body>
@@ -159,4 +159,6 @@ return (
 
     </Container>
   </Navbar>
+
+
 );
