@@ -1,114 +1,126 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
-import logo from "../../assets/logo.png";
+import tarta from "../../assets/tarta.png";
 import { supabase } from "../../database/supabaseconfig";
 
-const [mostrarMenu, setMostrarMenu] = useState(false);
-const navigate = useNavigate();
-const location = useLocation(); // Para detectar la ruta actual
+// import {useAuth} from "../../context/AuthContext";
 
-const manejarToggle = () => setMostrarMenu(!mostrarMenu);
+const Encabezado = () => {
 
-const manejarNavegacion = (ruta) => {
+  const [mostrarMenu, setMostrarMenu] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // Para detectar la ruta actual
+
+  const manejarToggle = () => setMostrarMenu(!mostrarMenu);
+
+  const manejarNavegacion = (ruta) => {
     navigate(ruta);
     setMostrarMenu(false);
-};
+  };
 
-const cerrarSesion = async () => {
+  const cerrarSesion = async () => {
     try {
-        const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
 
-        if (error) throw error;
+      if (error) throw error;
 
-        localStorage.removeItem("usuario-supabase");
-        setMostrarMenu(false);
-        navigate("/login");
+      localStorage.removeItem("usuario-supabase");
+      setMostrarMenu(false);
+      navigate("/login");
 
     } catch (err) {
-        console.error("Error cerrando sesión:", err.message);
+      console.error("Error cerrando sesión:", err.message);
     }
-};
+  };
 
-// Detectar rutas especiales
-const esLogin = location.pathname === "/login";
+  // Detectar rutas especiales
+  const esLogin = location.pathname === "/login";
 
-const esCatalogo =
+  const esCatalogo =
     location.pathname === "/catalogo" &&
     localStorage.getItem("usuario-supabase") === null;
 
- let contenidoMenu;
+  let contenidoMenu;
 
-if (esLogin) {
-  contenidoMenu = (
-    <Nav className="ms-auto pe-2">
-      <Nav.Link
-        onClick={() => manejarNavegacion("/login")}
-        className={mostrarMenu ? "color-texto-marca" : "text-white"}
-      >
-        <i className="bi-person-fill-lock me-2"></i>
-        Iniciar sesión
-      </Nav.Link>
-    </Nav>
-  );
-} else {
-  if (esCatalogo) {
+  if (esLogin) {
     contenidoMenu = (
       <Nav className="ms-auto pe-2">
         <Nav.Link
-          onClick={() => manejarNavegacion("/catalogo")}
+          onClick={() => manejarNavegacion("/login")}
           className={mostrarMenu ? "color-texto-marca" : "text-white"}
         >
-          <i className="bi-images me-2"></i>
-          <strong>Catálogo</strong>
+          <i className="bi-person-fill-lock me-2"></i>
+          Iniciar sesión
         </Nav.Link>
       </Nav>
     );
   } else {
-    contenidoMenu = (
-      <Nav className="ms-auto pe-2">
-        <Nav.Link
-          onClick={() => manejarNavegacion("/")}
-          className={mostrarMenu ? "color-texto-marca" : "text-white"}
-        >
-          {mostrarMenu && <i className="bi-house-fill me-2"></i>}
-          <strong>Inicio</strong>
-        </Nav.Link>
+    if (esCatalogo) {
+      contenidoMenu = (
+        <Nav className="ms-auto pe-2">
+          <Nav.Link
+            onClick={() => manejarNavegacion("/catalogo")}
+            className={mostrarMenu ? "color-texto-marca" : "text-white"}
+          >
+            <i className="bi-images me-2"></i>
+            <strong>Catálogo</strong>
+          </Nav.Link>
+        </Nav>
+      );
+    } else {
+      contenidoMenu = (
+        <Nav className="ms-auto pe-2">
+          <Nav.Link
+            onClick={() => manejarNavegacion("/")}
+            className={mostrarMenu ? "color-texto-marca" : "text-white"}
+          >
+            {mostrarMenu && <i className="bi-house-fill me-2"></i>}
+            <strong>Inicio</strong>
+          </Nav.Link>
 
-        <Nav.Link
-          onClick={() => manejarNavegacion("/categorias")}
-          className={mostrarMenu ? "color-texto-marca" : "text-white"}
-        >
-          {mostrarMenu && <i className="bi-bookmark-fill me-2"></i>}
-          <strong>Categorías</strong>
-        </Nav.Link>
+          <Nav.Link
+            onClick={() => manejarNavegacion("/categorias")}
+            className={mostrarMenu ? "color-texto-marca" : "text-white"}
+          >
+            {mostrarMenu && <i className="bi-bookmark-fill me-2"></i>}
+            <strong>Categorías</strong>
+          </Nav.Link>
 
-        <Nav.Link
-          onClick={() => manejarNavegacion("/productos")}
-          className={mostrarMenu ? "color-texto-marca" : "text-white"}
-        >
-          {mostrarMenu && <i className="bi-bag-heart-fill me-2"></i>}
-          <strong>Productos</strong>
-        </Nav.Link>
+          <Nav.Link
+            onClick={() => manejarNavegacion("/productos")}
+            className={mostrarMenu ? "color-texto-marca" : "text-white"}
+          >
+            {mostrarMenu && <i className="bi-bag-heart-fill me-2"></i>}
+            <strong>Productos</strong>
+          </Nav.Link>
+          <Nav.Link
+            onClick={cerrarSesion}
+            className={mostrarMenu ? "color-texto-marca" : "text-white"}
+          >
+            <strong>Cerrar sesion</strong> {" "}
+            <i className="bi-box-arrow-right me-2"></i>
+          </Nav.Link>
 
-        {/* Información de usuario y botón cerrar sesión */}
-        {mostrarMenu && (
-          <div className="mt-3 p-3 rounded bg-light text-dark">
-            <p className="mb-2">
-              <i className="bi-envelope-fill me-2"></i>
-              {localStorage.getItem("usuario-supabase")?.toLowerCase() || "Usuario"}
-            </p>
-            <button
-              className="btn btn-outline-danger mt-3 w-100"
-              onClick={cerrarSesion}
-            >
-              <i className="bi-box-arrow-right me-2"></i>
-              Cerrar sesión
-            </button>
-          </div>
-        )}
-      </Nav>
-    );
+          {/* Información de usuario y botón cerrar sesión */}
+          {mostrarMenu && (
+            <div className="mt-3 p-3 rounded bg-light text-dark">
+              <p className="mb-2">
+                <i className="bi-envelope-fill me-2"></i>
+                {localStorage.getItem("usuario-supabase")?.toLowerCase() || "Usuario"}
+              </p>
+              <button
+                className="btn btn-outline-danger mt-3 w-100"
+                onClick={cerrarSesion}
+              >
+                <i className="bi-box-arrow-right me-2"></i>
+                Cerrar sesión
+              </button>
+            </div>
+          )}
+        </Nav>
+      );
+    
   }
 }
 
@@ -123,13 +135,13 @@ return (
       >
         <img
           alt=""
-          src={logo}
+          src={tarta}
           width="45"
           height="45"
           className="d-inline-block me-2"
         />
         <strong>
-          <h4 className="mb-0">Discosa</h4>
+          <h4 className="mb-0">Tarta</h4>
         </strong>
       </Navbar.Brand>
 
@@ -162,3 +174,6 @@ return (
 
 
 );
+};
+
+export default Encabezado;

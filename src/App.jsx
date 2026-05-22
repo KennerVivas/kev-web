@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Encabezado from "./components/navegacion/Encabezado";
@@ -14,26 +14,44 @@ import Pagina404 from "./views/Pagina404";
 import "./App.css";
 
 const App = () => {
-return (
-<Router>
+  return (
+    <Router>
+      <Encabezado />
 
-<Encabezado />
+      <main className="margen-superior-main">
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
-<main className="margen-superior-main">
-<Routes>
+          <Route
+            path="/"
+            element={
+              <RutaProtegida>
+                <Inicio />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/categorias"
+            element={
+              <RutaProtegida>
+                <Categorias />
+              </RutaProtegida>
+            }
+          />
+          <Route path="/catalogo" element={<Catalogo />} />
+          <Route
+            path="/productos"
+            element={
+              <RutaProtegida>
+                <Productos />
+              </RutaProtegida>
+            }
+          />
 
-<Route path="/login" element={<Login />} />
-
-<Route path="/" element={<RutaProtegida><Inicio /></RutaProtegida>} />
-<Route path="/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
-<Route path="/catalogo" element={<Catalogo />} />
-<Route path="/productos" element={<RutaProtegida><Productos /></RutaProtegida>} />
-
-<Route path="*" element={<Pagina404 />} />
-
-</Routes>
-</main>
-</Router>
-);
-}
+          <Route path="*" element={<Pagina404 />} />
+        </Routes>
+      </main>
+    </Router>
+  );
+};
 export default App;
