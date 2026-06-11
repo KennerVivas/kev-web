@@ -76,7 +76,7 @@ const Encabezado = () => {
             className={mostrarMenu ? "color-texto-marca" : "text-white"}
           >
             {mostrarMenu && <i className="bi-house-fill me-2"></i>}
-            <strong>Inicio</strong>
+            <strong>🔓Inicio</strong>
           </Nav.Link>
 
           <Nav.Link
@@ -84,7 +84,7 @@ const Encabezado = () => {
             className={mostrarMenu ? "color-texto-marca" : "text-white"}
           >
             {mostrarMenu && <i className="bi-bookmark-fill me-2"></i>}
-            <strong>Categorías</strong>
+            <strong>📒Categorías</strong>
           </Nav.Link>
 
           <Nav.Link
@@ -92,13 +92,22 @@ const Encabezado = () => {
             className={mostrarMenu ? "color-texto-marca" : "text-white"}
           >
             {mostrarMenu && <i className="bi-bag-heart-fill me-2"></i>}
-            <strong>Productos</strong>
+            <strong>🍰Productos</strong>
           </Nav.Link>
+
+          <Nav.Link
+            onClick={() => manejarNavegacion("/catalogo")}
+            className={mostrarMenu ? "color-texto-marca" : "text-white"}
+          >
+            {mostrarMenu && <i className="bi-bag-heart-fill me-2"></i>}
+            <strong>🛒Catalogo</strong>
+          </Nav.Link>
+
           <Nav.Link
             onClick={cerrarSesion}
             className={mostrarMenu ? "color-texto-marca" : "text-white"}
           >
-            <strong>Cerrar sesion</strong> {" "}
+            <strong>🔒Cerrar sesion</strong> {" "}
             <i className="bi-box-arrow-right me-2"></i>
           </Nav.Link>
 
@@ -141,7 +150,7 @@ return (
           className="d-inline-block me-2"
         />
         <strong>
-          <h4 className="mb-0">Tarta</h4>
+          <h4 className="mb-0">Reposteria Deli Deli</h4>
         </strong>
       </Navbar.Brand>
 
