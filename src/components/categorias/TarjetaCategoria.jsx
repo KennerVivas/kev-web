@@ -21,7 +21,6 @@ const TarjetaCategoria = ({
 
   useEffect(() => {
     window.addEventListener("keydown", manejarTeclaEscape);
-
     return () => window.removeEventListener("keydown", manejarTeclaEscape);
   }, [manejarTeclaEscape]);
 
@@ -31,7 +30,6 @@ const TarjetaCategoria = ({
 
   return (
     <>
-
       {cargando ? (
         <div className="text-center my-5">
           <h5>Cargando categorias ...</h5>
@@ -39,36 +37,34 @@ const TarjetaCategoria = ({
         </div>
       ) : (
         <div>
-
           {categorias.map((categoria) => {
             const tarjetaActiva = idTarjetaActiva === categoria.id_categoria;
 
             return (
               <Card
                 key={categoria.id_categoria}
-                className="mb-3 border-0 rounded-3 shadow-sm w-100 tarjeta-categoria-contenedor"
+                className="mb-3 border-0 rounded-3 shadow-sm w-100 tarjeta-categoria-contenedor position-relative"
                 onClick={() => alternarTarjetaActiva(categoria.id_categoria)}
                 tabIndex={0}
                 onKeyDown={(evento) => {
                   if (evento.key === "Enter" || evento.key === " ") {
                     evento.preventDefault();
                     alternarTarjetaActiva(categoria.id_categoria);
-
                   }
                 }}
-                aria-label={'Categoria ${categoria.nombre_categoria}'}
+                aria-label={`Categoria ${categoria.nombre_categoria}`}
               >
-                <Card.Body className={`p-2 tarjeta-categoria-cuerpo ${tarjetaActiva
+                <Card.Body className={`p-2 tarjeta-categoria-cuerpo position-relative ${tarjetaActiva
                   ? "tarjeta-categoria-cuerpo-activo"
                   : "tarjeta-categoria-cuerpo-inactivo"
                   }`}
                 >
-
-                  <Row className="align-items-center gx-3"> <Col xs={2} className="px-2"> <div className="bg-light d-flex align-items-center justify-content-center rounded tarjeta-categoria-placeholder-imagen"
-                  >
-                    <i className="bi bi-bookmark text-muted fs-3"></i>
-                  </div>
-                  </Col>
+                  <Row className="align-items-center gx-3"> 
+                    <Col xs={2} className="px-2"> 
+                      <div className="bg-light d-flex align-items-center justify-content-center rounded tarjeta-categoria-placeholder-imagen">
+                        <i className="bi bi-bookmark text-muted fs-3"></i>
+                      </div>
+                    </Col>
 
                     <Col xs={5} className="text-start">
                       <div className="fw-semibold text-truncate">
@@ -79,15 +75,13 @@ const TarjetaCategoria = ({
                       </div>
                     </Col>
 
-                    <Col xs={5} className="d-flex flex-column align-items-end justify-content-center text-end"
-                    >
+                    <Col xs={5} className="d-flex flex-column align-items-end justify-content-center text-end">
                       <div className="fw-semibold small">Activa</div>
                     </Col>
                   </Row>
-                </Card.Body>
 
-                {
-                  tarjetaActiva && (
+                  {/* AJUSTE: La capa ahora se renderiza DENTRO del Card.Body, justo abajo del Row */}
+                  {tarjetaActiva && (
                     <div
                       role="dialog"
                       aria-modal="true"
@@ -95,13 +89,12 @@ const TarjetaCategoria = ({
                         e.stopPropagation();
                         setIdTarjetaActiva(null);
                       }}
-                      className="tar jeta-categoria-capa"
+                      className="tarjeta-categoria-capa w-100 h-100"
                     >
                       <div
                         className="d-flex gap-2 tarjeta-categoria-botones-capa"
                         onClick={(e) => e.stopPropagation()}
                       >
-
                         <Button
                           variant="outline-warning"
                           size="sm"
@@ -111,7 +104,6 @@ const TarjetaCategoria = ({
                           }}
                           aria-label={`Editar ${categoria.nombre_categoria}`}
                         >
-
                           <i className="bi bi-pencil"></i>
                         </Button>
 
@@ -125,16 +117,15 @@ const TarjetaCategoria = ({
                           aria-label={`Eliminar ${categoria.nombre_categoria}`}
                         >
                           <i className="bi bi-trash"></i>
-
                         </Button>
                       </div>
                     </div>
-                  )
-                }
+                  )}
+                </Card.Body>
               </Card>
             );
           })}
-        </div >
+        </div>
       )}
     </>
   );

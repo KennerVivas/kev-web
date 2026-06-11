@@ -15,7 +15,6 @@
 
 .tarjeta-categoria-contenedor {
     position: relative;
-    overflow: hidden;
 }
 
 .tarjeta-categoria-cuerpo {
@@ -33,4 +32,78 @@
 .tarjeta-categoria-placeholder-imagen {
     height: 50px;
     width: 50px;
+}
+
+.tarjeta-categoria-capa {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;     
+    justify-content: center;  
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.4); 
+    padding: 8px;
+    cursor: pointer;
+}
+
+.tarjeta-categoria-botones-capa {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px; 
+    padding: 6px;
+    display: flex;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+    transform: translateY(-15px); 
+}
+
+.tarjeta-producto-contenedor {
+    position: relative;
+}
+
+.tarjeta-producto-cuerpo {
+    transition: opacity 150ms ease;
+}
+
+.tarjeta-producto-cuerpo-activo {
+    opacity: 0.4;
+}
+
+.tarjeta-producto-cuerpo-inactivo {
+    opacity: 1;
+}
+
+.tarjeta-producto-placeholder-imagen {
+    height: 50px;
+    width: 50px;
+}
+
+.tarjeta-producto-capa {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.4); 
+    padding: 8px;
+    cursor: pointer;
+}
+
+/* Diseño de la burbuja/píldora flotante */
+.tarjeta-producto-botones-capa {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px; 
+    padding: 6px;
+    display: flex;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+    transform: translateY(-15px); 
 }
