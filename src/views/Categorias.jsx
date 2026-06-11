@@ -1,11 +1,206 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
 import { supabase } from "../database/supabaseconfig";
 
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
+import TablaCategorias from "../components/categorias/TablaCategorias";
 import NotificacionOperacion from "../components/NotificacionOperaciones";
+import TarjetaCategoria from "../components/categorias/TarjetaCategoria";
+import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
+import Paginacion from "../components/ordenamiento/Paginacion";
+
+import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
+import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
+
 
 const Categorias = () => {
+
+    const [categorias, setCategorias] = useState([]);
+    const [cargando, setCargando] = useState(true); // Estado de carga inicial 
+    const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
+    const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
+    const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
+
+    const [textoBusqueda, setTextoBusqueda] = useState(" ");
+    const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
+
+    const [registrosPorPagina, establecerRegistrosPorPagina] = useState(5);
+    const [paginaActual, establecerPaginaActual] = useState(1);
+
+    const manejarBusqueda = (e) => {
+        setTextoBusqueda(e.target.value);
+    };
+
+    const categoriasPaginadas = categoriasFiltradas.slice(
+        (paginaActual - 1) * registrosPorPagina,
+        paginaActual * registrosPorPagina
+    );
+
+    const [categoriaEditar, setCategoriaEditar] = useState({
+        id_categoria: "",
+        nombre_categoria: "",
+        descripcion_categoria: "",
+    });
+
+    const manejoCambioInputEdicion = (e) => {
+        const { name, value } = e.target;
+        setCategoriaEditar((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+
+
+    const actualizarCategoria = async () => {
+
+
+        try {
+            if (!categoriaEditar.nombre_categoria.trim() || !categoriaEditar.descripcion_categoria.trim()
+            ) {
+                setToast({
+                    mostrar: true,
+                    mensaje: "Debe llenar todos los campos.",
+                    tipo: "advertencia",
+                });
+                return;
+            }
+            setMostrarModalEdicion(false);
+
+            const { error } = await supabase
+                .from("categorias")
+                .update({
+                    nombre_categoria: categoriaEditar.nombre_categoria,
+                    descripcion_categoria: categoriaEditar.descripcion_categoria,
+                })
+                .eq("id_categoria", categoriaEditar.id_categoria);
+
+            if (error) {
+                console.error("Error al actualizar categoría:", error.message);
+                setToast({
+                    mostrar: true,
+                    mensaje: `Error al actualizar la categoría ${categoriaEditar.nombre_categoria}.`,
+                    tipo: "error",
+                });
+                return;
+            }
+            await cargarCategorias();
+            setToast({
+                mostrar: true,
+                mensaje: `Categoría ${categoriaEditar.nombre_categoria} actualizada exitosamente.`,
+                tipo: "exito",
+            });
+
+        } catch (err) {
+            setToast({
+                mostrar: true,
+                mensaje: "Error inesperado al actualizar categoría.",
+                tipo: "error",
+            });
+
+            console.error("Excepción al actualizar categoría:", err.message);
+        }
+
+
+    };
+
+
+
+    const eliminarCategoria = async () => {
+
+        if (!categoriaAEliminar) return;
+
+        try {
+            setMostrarModalEliminacion(false);
+            console.log("TRatando de eliminar datos.");
+            const { error } = await supabase
+                .from("categorias")
+                .delete()
+                .eq("id_categoria", categoriaAEliminar.id_categoria);
+
+            if (error) {
+
+                console.error("Error al eliminar categoría:", error.message);
+
+                setToast({
+                    mostrar: true,
+                    mensaje: `Error al eliminar la categoría ${categoriaAEliminar.nombre_categoria}.`,
+                    tipo: "error",
+                });
+
+                return;
+            }
+
+            await cargarCategorias();
+
+            setToast({
+                mostrar: true,
+                mensaje: `Categoría ${categoriaAEliminar.nombre_categoria} eliminada exitosamente.`,
+                tipo: "exito",
+            });
+
+        } catch (err) {
+
+            setToast({
+                mostrar: true,
+                mensaje: "Error inesperado al eliminar categoría.",
+                tipo: "error",
+            });
+
+            console.error("Excepción al eliminar categoría:", err.message);
+
+        }
+
+
+
+    };
+
+    const abrirModalEdicion = (categoria) => {
+        setCategoriaEditar({
+            id_categoria: categoria.id_categoria,
+            nombre_categoria: categoria.nombre_categoria,
+            descripcion_categoria: categoria.descripcion_categoria,
+        });
+        setMostrarModalEdicion(true);
+    };
+    const abrirModalEliminacion = (categoria) => {
+        setCategoriaAEliminar(categoria);
+        setMostrarModalEliminacion(true);
+    };
+
+    const cargarCategorias = async () => {
+        try {
+            setCargando(true);
+            const { data, error } = await supabase
+                .from("categorias")
+                .select("*")
+                .order("id_categoria", { ascending: true });
+            if (error) {
+                console.error("Error al cargar categorias:", error.message);
+                setToast({
+                    mostrar: true,
+                    mensaje: "Error al cargar categorías.",
+                    tipo: "error",
+                });
+                return;
+            }
+            setCategorias(data || []);
+        } catch (err) {
+            console.error("Excepción al cargar categorías:", err.message);
+            setToast({
+                mostrar: true,
+                mensaje: "Error inesperado al cargar categorías.",
+                tipo: "error",
+            });
+        } finally {
+            setCargando(false);
+        }
+    };
+
+    useEffect(() => {
+        cargarCategorias();
+    }, []);
+
     const [toast, setToast] = useState({
         mostrar: false,
         mensaje: "",
@@ -29,6 +224,7 @@ const Categorias = () => {
     };
 
     const agregarCategoria = async () => {
+
         try {
             if (
                 !nuevaCategoria.nombre_categoria.trim() ||
@@ -61,6 +257,8 @@ const Categorias = () => {
                 return;
             }
 
+            await cargarCategorias();
+
             // Éxito
             setToast({
                 mostrar: true,
@@ -84,9 +282,28 @@ const Categorias = () => {
                 tipo: "error",
             });
         }
+
+
     };
 
+
+
+
+    useEffect(() => {
+        if (!textoBusqueda.trim()) { setCategoriasFiltradas(categorias); } else {
+            const textoLower = textoBusqueda.toLowerCase().trim();
+            const filtradas = categorias.filter((cat) => cat.nombre_categoria.toLowerCase().includes(textoLower) ||
+                (cat.descripcion_categoria && cat.descripcion_categoria.toLowerCase().includes(textoLower))
+            );
+
+            setCategoriasFiltradas(filtradas);
+        };
+    }, [textoBusqueda, categorias]);
+
+
     return (
+
+
         <Container className="mt-3">
             {/* Título y botón Nueva Categoría */}
             <Row className="align-items-center mb-3">
@@ -107,6 +324,61 @@ const Categorias = () => {
             </Row>
 
             <hr />
+            {/* Cuadro de búsqueda debajo de la línea divisoria */}
+            <Row className="mb-4">
+                <Col md={6} lg={5}>
+                    <CuadroBusquedas
+                        textoBusqueda={textoBusqueda}
+                        manejarCambioBusqueda={manejarBusqueda}
+                        placeholder="Buscar por nombre o descripción..."
+                    />
+                </Col>
+            </Row>
+
+            {/* Mensaje de no coincidencias solo cuando hay búsqueda y no hay resultados */}
+            {!cargando && textoBusqueda.trim() && categoriasFiltradas.length === 0 && (
+                <Row className="mb-4">
+                    <Col>
+                        <Alert variant="info" className="text-center">
+                            <i className="bi bi-info-circle me-2"></i>
+                            No se encontraron categorías que coincidan con "{textoBusqueda}".
+                        </Alert>
+                    </Col>
+                </Row>
+            )}
+
+            <Col xs={12} sm={12} md={12} className="d-lg-none">
+                <TarjetaCategoria
+                    categorias={categoriasFiltradas}
+                    abrirModalEdicion={abrirModalEdicion}
+                    abrirModalEliminacion={abrirModalEliminacion}
+                />
+            </Col>
+
+            {/* Spinner mientras se cargan las categorías */}
+            {cargando && (
+                <Row className="text-center my-5">
+                    <Col>
+                        <Spinner animation="border" variant="success" size="lg" />
+                        <p className="mt-3 text-muted">Cargando categorias ...</p>
+                    </Col>
+                </Row>
+            )}
+
+
+
+            {/* Lista de categorías cargadas */}
+            {!cargando && categorias.length > 0 && (
+                <Row>
+                    <Col lg={12} className="d-lg-block">
+                        <TablaCategorias
+                            categorias={categoriasFiltradas}
+                            abrirModalEdicion={abrirModalEdicion}
+                            abrirModalEliminacion={abrirModalEliminacion}
+                        />
+                    </Col>
+                </Row>
+            )}
 
             {/* Modal de Registro */}
             <ModalRegistroCategoria
@@ -115,6 +387,21 @@ const Categorias = () => {
                 nuevaCategoria={nuevaCategoria}
                 manejoCambioInput={manejoCambioInput}
                 agregarCategoria={agregarCategoria}
+            />
+
+            <ModalEdicionCategoria
+                mostrarModalEdicion={mostrarModalEdicion}
+                setMostrarModalEdicion={setMostrarModalEdicion}
+                categoriaEditar={categoriaEditar}
+                manejoCambioInputEdicion={manejoCambioInputEdicion}
+                actualizarCategoria={actualizarCategoria}
+            />
+
+            <ModalEliminacionCategoria
+                mostrarModalEliminacion={mostrarModalEliminacion}
+                setMostrarModalEliminacion={setMostrarModalEliminacion}
+                eliminarCategoria={eliminarCategoria}
+                categoria={categoriaAEliminar}
             />
 
             {/* Notificación */}
@@ -129,6 +416,19 @@ const Categorias = () => {
                     })
                 }
             />
+
+            {/* Paginación */}
+            {categoriasPaginadas.length > 0 && (
+                <Paginacion
+                    registrosPorPagina={registrosPorPagina}
+                    totalRegistros={categoriasPaginadas.length}
+                    paginaActual={paginaActual}
+                    establecerPaginaActual={establecerPaginaActual}
+                    establecerRegistrosPorPagina={establecerRegistrosPorPagina}
+                />
+            )}
+
+
         </Container>
     );
 };

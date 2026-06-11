@@ -25,7 +25,7 @@ const Login = () => {
         localStorage.setItem("usuario-supabase", usuario);
         navegar("/");
       }
-      
+
     } catch (err) {
       setError("Error al conectar con el servidor");
       console.error("Error en la solicitud :", err);
